@@ -11,5 +11,5 @@ Run task with
 For example
 
 ```
-> npm run start npm run start ./2022/01/01_01.ts
+> npm run start ./2022/01/01_01.ts
 ```
