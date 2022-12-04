@@ -15,11 +15,11 @@ class Task {
     this.partTwo = partTwo;
   }
 
-  async exec(): Promise<[string | undefined, string | undefined]> {
+  async exec(part: string | undefined): Promise<[string | undefined, string | undefined]> {
     const input = await this.loadInput();
 
-    const partOneResult = this.partOne?.(input);
-    const partTwoResult = this.partTwo?.(input);
+    const partOneResult = part === undefined || part === "1" ? this.partOne?.(input) : "-";
+    const partTwoResult = part === undefined || part === "2" ? this.partTwo?.(input) : "-";
 
     return [partOneResult, partTwoResult];
   }
@@ -58,7 +58,7 @@ class Task {
     const inputPath = cachePath + `/${this.day}_input.txt`;
     if (!fs.existsSync(inputPath)) {
       const input = await this.fetchInput();
-      fs.writeFileSync(inputPath, input);
+      fs.writeFileSync(inputPath, input.trim());
     }
 
     return fs.readFileSync(inputPath).toString();

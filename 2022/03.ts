@@ -34,7 +34,6 @@ const part2: TaskPartSolution = (input) =>
     .filter((r) => r.length != 0)
     .reduce<string[][]>(
       (acc, row) => {
-        console.log(row);
         if (acc[0].length === 3) {
           acc.unshift([]);
         }
