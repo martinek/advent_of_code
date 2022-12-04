@@ -5,11 +5,17 @@ Each year has separate directory.
 Run task with
 
 ```
-> npm run start <path to script>
+> npm run task <task number>
 ```
 
 For example
 
 ```
-> npm run start ./2022/01/01_01.ts
+> npm run task 01
+```
+
+Specific part can be run by
+
+```
+> npm run task 01-1
 ```
