@@ -1,4 +1,4 @@
-import Task, { TaskPartSolution } from "./utils/task.js";
+import Task, { TaskPartSolution } from "../utils/task.js";
 
 const sampleInput = `
 vJrwpWtwJgWrhcsFMMfFFhFp
@@ -55,6 +55,6 @@ const part2: TaskPartSolution = (input) =>
     .reduce((acc, i) => acc + i, 0)
     .toString();
 
-const task03 = new Task(3, part1, part2);
+const task = new Task(2022, 3, part1, part2);
 
-export default task03;
+export default task;

@@ -19,3 +19,9 @@ Specific part can be run by
 ```
 > npm run task 01-1
 ```
+
+Different years can be run by providing year first. If year is omitted, current year is used.
+
+```
+> npm run task 2021-01-1
+```

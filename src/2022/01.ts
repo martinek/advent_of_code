@@ -1,4 +1,4 @@
-import Task, { TaskPartSolution } from "./utils/task.js";
+import Task, { TaskPartSolution } from "../utils/task.js";
 
 const part1: TaskPartSolution = (input) => {
   let max = 0;
@@ -37,6 +37,6 @@ const part2: TaskPartSolution = (input) => {
   return topThreeSum.toString();
 };
 
-const task = new Task(1, part1, part2);
+const task = new Task(2022, 1, part1, part2);
 
 export default task;

@@ -1,4 +1,4 @@
-import Task, { TaskPartSolution } from "./utils/task.js";
+import Task, { TaskPartSolution } from "../utils/task.js";
 
 const sampleInput = `    [D]    
 [N] [C]    
@@ -83,6 +83,6 @@ const part2: TaskPartSolution = (input) => {
   return getResult(state);
 };
 
-const task = new Task(5, part1, part2);
+const task = new Task(2022, 5, part1, part2);
 
 export default task;

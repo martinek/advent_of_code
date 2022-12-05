@@ -5,11 +5,18 @@ import fetch from "node-fetch";
 export type TaskPartSolution = (input: string) => string;
 
 class Task {
+  year: number;
   day: number;
   partOne: TaskPartSolution | undefined;
   partTwo: TaskPartSolution | undefined;
 
-  constructor(day: number, partOne?: TaskPartSolution | undefined, partTwo?: TaskPartSolution | undefined) {
+  constructor(
+    year: number,
+    day: number,
+    partOne?: TaskPartSolution | undefined,
+    partTwo?: TaskPartSolution | undefined
+  ) {
+    this.year = year;
     this.day = day;
     this.partOne = partOne;
     this.partTwo = partTwo;
@@ -25,7 +32,7 @@ class Task {
   }
 
   private async fetchInput() {
-    const url = `https://adventofcode.com/2022/day/${this.day}/input`;
+    const url = `https://adventofcode.com/${this.year}/day/${this.day}/input`;
     const USER_AGENT = process.env["USER_AGENT"];
     const SESSION = process.env["SESSION"];
 
@@ -55,7 +62,7 @@ class Task {
       fs.mkdirSync(cachePath);
     }
 
-    const inputPath = cachePath + `/${this.day}_input.txt`;
+    const inputPath = cachePath + `/${this.year}-${this.day}_input.txt`;
     if (!fs.existsSync(inputPath)) {
       const input = await this.fetchInput();
       fs.writeFileSync(inputPath, input);

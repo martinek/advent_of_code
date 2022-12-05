@@ -1,4 +1,4 @@
-import Task, { TaskPartSolution } from "./utils/task.js";
+import Task, { TaskPartSolution } from "../utils/task.js";
 
 const part1: TaskPartSolution = (input) => {
   const pts = {
@@ -90,6 +90,6 @@ const part2: TaskPartSolution = (input) => {
   return total.toString();
 };
 
-const task = new Task(2, part1, part2);
+const task = new Task(2022, 2, part1, part2);
 
 export default task;
