@@ -58,7 +58,7 @@ class Task {
     const inputPath = cachePath + `/${this.day}_input.txt`;
     if (!fs.existsSync(inputPath)) {
       const input = await this.fetchInput();
-      fs.writeFileSync(inputPath, input.trim());
+      fs.writeFileSync(inputPath, input);
     }
 
     return fs.readFileSync(inputPath).toString();
