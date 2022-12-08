@@ -64,7 +64,10 @@ class Task {
 
     const inputPath = cachePath + `/${this.year}-${this.day}_input.txt`;
     if (!fs.existsSync(inputPath)) {
-      const input = await this.fetchInput();
+      let input = await this.fetchInput();
+      if (input.endsWith("\n")) {
+        input = input.slice(0, -1);
+      }
       fs.writeFileSync(inputPath, input);
     }
 
