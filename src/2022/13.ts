@@ -74,7 +74,7 @@ const part1: TaskPartSolution = (input) => {
     return acc + (sorted ? i + 1 : 0);
   }, 0);
 
-  return sum.toString();
+  return sum;
 };
 
 const part2: TaskPartSolution = (input) => {
@@ -95,7 +95,7 @@ const part2: TaskPartSolution = (input) => {
   // console.log(ordered);
   // console.log(pos1, pos2);
 
-  return (pos1 * pos2).toString();
+  return pos1 * pos2;
 };
 
 const task = new Task(2022, 13, part1, part2);

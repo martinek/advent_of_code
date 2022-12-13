@@ -2,7 +2,8 @@ import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
 
-export type TaskPartSolution = (input: string) => string;
+type TaskResult = string | number | undefined | void;
+export type TaskPartSolution = (input: string) => TaskResult;
 
 class Task {
   year: number;
@@ -22,7 +23,7 @@ class Task {
     this.partTwo = partTwo;
   }
 
-  async exec(part: string | undefined): Promise<[string | undefined, string | undefined]> {
+  async exec(part: string | undefined): Promise<[TaskResult, TaskResult]> {
     const input = await this.loadInput();
 
     const partOneResult = part === undefined || part === "1" ? this.partOne?.(input) : "-";
