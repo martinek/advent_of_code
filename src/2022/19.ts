@@ -110,6 +110,9 @@ const nextStates = (state: State, bp: Blueprint): State[] => {
     case "geo": {
       if (bp.geodeCost.ore <= state.ore && bp.geodeCost.obsidian <= state.obsidian) {
         nextState = applyBp(baseState, bp, "geo");
+        if (nextState.obsidianRobots >= bp.geodeCost.obsidian && nextState.oreRobots >= bp.geodeCost.ore) {
+          return [{ ...nextState, nextRobot: "geo" as RobotType }];
+        }
         break;
       } else {
         return [baseState];
@@ -191,6 +194,7 @@ class Blueprint {
     }
 
     let i = 0;
+    const start = performance.now();
 
     while (states.length > 0) {
       i++;
@@ -201,14 +205,15 @@ class Blueprint {
         maxGeodeCount = state.geode;
       }
       if (i % 1000000 === 0) {
+        const time = performance.now() - start;
+        const perMS = i / time;
         // console.log(i, ":", states.length, Object.keys(visitedStates[state.timeLeft]).length);
-        console.log(i, ":", states.length);
+        console.log(`[${time}]`, i, ":", states.length, `${(perMS * 1000).toFixed(2)}/s`);
       }
       states.push(...nextStates(state, this));
     }
 
-    console.log(`FINISHED BP #${this.id}: ${maxGeodeCount}`);
-
+    console.log(`FINISHED BP #${this.id}: ${maxGeodeCount} in ${i} checks`);
     return maxGeodeCount;
   }
 }
@@ -228,7 +233,7 @@ const part1: TaskPartSolution = (input) => {
 };
 
 const part2: TaskPartSolution = (input) => {
-  const bpts = parseInput(sampleInput).slice(0, 3);
+  const bpts = parseInput(input).slice(0, 3);
   const time = 32;
   const maxes = bpts.map((bpt) => bpt.findMax(time));
 
