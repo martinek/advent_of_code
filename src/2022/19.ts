@@ -24,16 +24,14 @@ interface State {
   nextRobot: RobotType;
 }
 
-const addResources = (state: State): State => {
-  return {
-    ...state,
-    ore: state.ore + state.oreRobots,
-    clay: state.clay + state.clayRobots,
-    obsidian: state.obsidian + state.obsidianRobots,
-    geode: state.geode + state.geodeRobots,
-    timeLeft: state.timeLeft - 1,
-  };
-};
+const addResources = (state: State, time = 1): State => ({
+  ...state,
+  ore: state.ore + state.oreRobots * time,
+  clay: state.clay + state.clayRobots * time,
+  obsidian: state.obsidian + state.obsidianRobots * time,
+  geode: state.geode + state.geodeRobots * time,
+  timeLeft: state.timeLeft - time,
+});
 
 const applyBp = (state: State, bp: Blueprint, build: RobotType): State => {
   switch (build) {
@@ -58,7 +56,9 @@ const applyBp = (state: State, bp: Blueprint, build: RobotType): State => {
   }
 };
 
-const validateState = (state: State, bp: Blueprint): boolean => {
+const validateState = (state: State, bp: Blueprint, currentBest: number): boolean => {
+  if (state.timeLeft <= 0) return false; // time is up
+  // next robot would be over the "cap" (no need to have more then X robots, if we can use at most X in one step)
   switch (state.nextRobot) {
     case "ore":
       if (state.oreRobots >= bp.maxRobots.ore) return false;
@@ -67,19 +67,29 @@ const validateState = (state: State, bp: Blueprint): boolean => {
     case "obs":
       if (state.obsidianRobots >= bp.maxRobots.obs) return false;
   }
+  // we need clay robots for obs robot
   if (state.nextRobot === "obs" && state.clayRobots === 0) return false;
+  // we need obs robots for geo robot
   if (state.nextRobot === "geo" && state.obsidianRobots === 0) return false;
+
+  const possibleMax = state.geode + state.geodeRobots * state.timeLeft + (state.timeLeft * state.timeLeft) / 2;
+  if (possibleMax < currentBest) return false;
+
   return true;
 };
 
 const stateStr = (state: State) =>
   `${state.timeLeft} - ${state.ore}(${state.oreRobots}) ${state.clay}(${state.clayRobots}) ${state.obsidian}(${state.obsidianRobots}) ${state.geode}(${state.geodeRobots}) | ${state.nextRobot}`;
 
-const nextStates = (state: State, bp: Blueprint): State[] => {
+const nextStates = (state: State, bp: Blueprint, maxRef: { max: number }): State[] => {
   // console.log("[nextStates] state", stateStr(state));
-  if (state.timeLeft == 0) return [];
+  if (state.timeLeft <= 0) return [];
 
   const baseState = addResources(state);
+  if (maxRef.max < baseState.geode) {
+    console.log("NEW MAX", maxRef.max, stateStr(baseState));
+    maxRef.max = baseState.geode;
+  }
   let nextState: State;
 
   switch (state.nextRobot) {
@@ -122,12 +132,40 @@ const nextStates = (state: State, bp: Blueprint): State[] => {
 
   // console.log("[nextStates] nextState", stateStr(nextState));
 
+  // Return "time-shifted" states to when the next robot will be built
+  // return (["ore", "clay", "obs", "geo"] as RobotType[])
+  //   .map((nextRobot) => {
+  //     let nextReadyIn: number;
+  //     switch (nextRobot) {
+  //       case "ore":
+  //         nextReadyIn = Math.ceil(bp.oreCost.ore / nextState.oreRobots);
+  //         break;
+  //       case "clay":
+  //         nextReadyIn = Math.ceil(bp.clayCost.ore / nextState.oreRobots);
+  //         break;
+  //       case "obs":
+  //         nextReadyIn = Math.max(
+  //           Math.ceil(bp.obsidianCost.ore / nextState.oreRobots),
+  //           Math.ceil(bp.obsidianCost.clay / nextState.clayRobots)
+  //         );
+  //         break;
+  //       case "geo":
+  //         nextReadyIn = Math.max(
+  //           Math.ceil(bp.geodeCost.ore / nextState.oreRobots),
+  //           Math.ceil(bp.geodeCost.obsidian / nextState.obsidianRobots)
+  //         );
+  //         break;
+  //     }
+  //     return { ...addResources(nextState, nextReadyIn - 1), nextRobot };
+  //   })
+  //   .filter((s) => validateState(s, bp, maxRef.max));
+
   return [
     { ...nextState, nextRobot: "ore" as RobotType },
     { ...nextState, nextRobot: "clay" as RobotType },
     { ...nextState, nextRobot: "obs" as RobotType },
     { ...nextState, nextRobot: "geo" as RobotType },
-  ].filter((s) => validateState(s, bp));
+  ].filter((s) => validateState(s, bp, maxRef.max));
 };
 
 class Blueprint {
@@ -187,7 +225,7 @@ class Blueprint {
       },
     ];
 
-    let maxGeodeCount = 0;
+    const max = { max: 0 };
     const visitedStates: { [time: number]: { [stateKey: string]: number } } = {};
     for (let i = 0; i <= time; i++) {
       visitedStates[i] = {};
@@ -200,21 +238,21 @@ class Blueprint {
       i++;
       const state = states.pop()!;
 
-      if (state.geode > maxGeodeCount) {
-        console.log("NEW MAX", state.geode, states.length);
-        maxGeodeCount = state.geode;
-      }
+      // if (state.geode > maxGeodeCount) {
+      //   console.log("NEW MAX", state.geode, states.length);
+      //   maxGeodeCount = state.geode;
+      // }
       if (i % 1000000 === 0) {
         const time = performance.now() - start;
         const perMS = i / time;
         // console.log(i, ":", states.length, Object.keys(visitedStates[state.timeLeft]).length);
         console.log(`[${time}]`, i, ":", states.length, `${(perMS * 1000).toFixed(2)}/s`);
       }
-      states.push(...nextStates(state, this));
+      states.push(...nextStates(state, this, max));
     }
 
-    console.log(`FINISHED BP #${this.id}: ${maxGeodeCount} in ${i} checks`);
-    return maxGeodeCount;
+    console.log(`FINISHED BP #${this.id}: ${max.max} in ${i} checks`);
+    return max.max;
   }
 }
 
