@@ -50,6 +50,24 @@ const part2: TaskPartSolution = (input) => {
   return sum;
 };
 
-const task = new Task(2023, 1, part1, part2);
+const task = new Task(2023, 1, part1, part2, {
+  part1: {
+    input: `1abc2
+pqr3stu8vwx
+a1b2c3d4e5f
+treb7uchet`,
+    result: "142",
+  },
+  part2: {
+    input: `two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen`,
+    result: "281",
+  },
+});
 
 export default task;

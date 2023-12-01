@@ -5,7 +5,9 @@ dotenv.config();
 import { Command } from "commander";
 import fs from "fs";
 
-const program = new Command().argument("<string>", "task identifier in form of YYYY-DD or YYYY-DD-P");
+const program = new Command()
+  .option("-t, --test", "run task tests")
+  .argument("<string>", "task identifier in form of YYYY-DD or YYYY-DD-P");
 
 const invalidTarget = (t?: string) => {
   console.log(`Missing / invalid task identifier${t ? ` (${t})` : ""}
@@ -56,17 +58,18 @@ const getTask = async (target: Target): Promise<Task> => {
   return task;
 };
 
-const resolveTask = async (): Promise<{ target: Target; task: Task }> => {
+const resolveTask = async (): Promise<{ target: Target; task: Task; test: boolean }> => {
   const options = program.parse();
   const target = parseTarget(options.args[0]);
   const task = await getTask(target);
-  return { target, task };
+  return { target, task, test: options.getOptionValue("test") };
 };
 
 async function main() {
-  const { target, task } = await resolveTask();
-  console.log(`Running day #${target.day}!`);
-  const results = await task.exec(target.part);
+  const { target, task, test } = await resolveTask();
+  console.log(`Running ${test ? "tests for" : "task of"} day #${target.day}!`);
+
+  const results = await task[test ? "test" : "exec"](target.part);
   console.log(results);
 }
 
