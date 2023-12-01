@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import Task from "./src/utils/task";
-import fs from "fs";
 dotenv.config();
+
+import { Command } from "commander";
+import fs from "fs";
+
+const program = new Command().argument("<string>", "task identifier in form of YYYY-DD or YYYY-DD-P");
 
 const invalidTarget = (t?: string) => {
   console.log(`Missing / invalid task identifier${t ? ` (${t})` : ""}
@@ -13,10 +17,15 @@ const invalidTarget = (t?: string) => {
   process.exit(1);
 };
 
-async function main() {
-  const target = process.argv[2];
+interface Target {
+  year: string;
+  day: string;
+  part?: string;
+}
+
+const parseTarget = (target?: string): Target => {
   if (target == null) {
-    return invalidTarget();
+    return invalidTarget(target);
   }
 
   let [year, day, part] = target.split("-");
@@ -30,8 +39,11 @@ async function main() {
     return invalidTarget(`${year}-${day}-${part}`);
   }
 
-  console.log(`Running day #${day}!`);
+  return { year, day, part };
+};
 
+const getTask = async (target: Target): Promise<Task> => {
+  const { year, day } = target;
   if (!fs.existsSync(`./src/${year}/${day}.ts`)) {
     const template = fs.readFileSync(`./src/utils/_template.ts.txt`).toString();
     const taskFileContent = template
@@ -41,8 +53,20 @@ async function main() {
   }
 
   const task = (await import(`./src/${year}/${day}.js`)).default as Task;
-  const results = await task.exec(part);
+  return task;
+};
 
+const resolveTask = async (): Promise<{ target: Target; task: Task }> => {
+  const options = program.parse();
+  const target = parseTarget(options.args[0]);
+  const task = await getTask(target);
+  return { target, task };
+};
+
+async function main() {
+  const { target, task } = await resolveTask();
+  console.log(`Running day #${target.day}!`);
+  const results = await task.exec(target.part);
   console.log(results);
 }
 
