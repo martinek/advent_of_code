@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import Task from "./src/utils/task";
+import Task from "./src/utils/task.js";
 dotenv.config();
 
 import { Command } from "commander";
