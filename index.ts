@@ -4,6 +4,7 @@ dotenv.config();
 
 import { Command } from "commander";
 import fs from "fs";
+import { COLOR } from "./src/utils/helpers.js";
 
 const program = new Command()
   .option("-t, --test", "run task tests")
@@ -72,7 +73,9 @@ async function main() {
   const results = await task[test ? "test" : "exec"](target.part);
   results.forEach((res, i) => {
     if (res == null) return;
-    console.log(`=== Part ${i} ===\n${res.result}\nTime: ${res.time} ns`);
+    console.log(
+      `\n${COLOR.FgCyan}=== Part ${i} ===${COLOR.Reset}\n${COLOR.Bright}${res.result}${COLOR.Reset}\n${res.time} ns`
+    );
   });
 }
 
