@@ -70,7 +70,10 @@ async function main() {
   console.log(`Running ${test ? "tests for" : "task of"} day #${target.day}!`);
 
   const results = await task[test ? "test" : "exec"](target.part);
-  console.log(results);
+  results.forEach((res, i) => {
+    if (res == null) return;
+    console.log(`=== Part ${i} ===\n${res.result}\nTime: ${res.time} ns`);
+  });
 }
 
 main();

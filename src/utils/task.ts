@@ -1,9 +1,15 @@
 import fs from "fs";
 import path from "path";
 import fetch from "node-fetch";
+import { lPad } from "./helpers.js";
 
 type TaskResult = string | number | undefined | void;
 export type TaskPartSolution = (input: string) => TaskResult;
+
+type TaskRunResult = {
+  result: TaskResult;
+  time: string;
+} | null;
 
 interface TaskPartTestSuite {
   input: string;
@@ -35,16 +41,34 @@ class Task {
     this.tests = tests;
   }
 
-  async exec(part: string | undefined): Promise<[TaskResult, TaskResult]> {
+  async exec(part: string | undefined): Promise<[TaskRunResult, TaskRunResult]> {
     const input = await this.loadInput();
 
-    const partOneResult = part === undefined || part === "1" ? this.partOne?.(input) : "-";
-    const partTwoResult = part === undefined || part === "2" ? this.partTwo?.(input) : "-";
-
-    return [partOneResult, partTwoResult];
+    return [this.execPart(part, 1, input), this.execPart(part, 2, input)];
   }
 
-  async test(part: string | undefined): Promise<[TaskResult, TaskResult]> {
+  private execPart(part: string | undefined, pt: number, input: string): TaskRunResult {
+    let solution: TaskPartSolution | undefined;
+
+    if (part === undefined || part === pt.toString()) {
+      solution = pt === 1 ? this.partOne : this.partTwo;
+    }
+
+    if (solution == null) {
+      return null;
+    }
+
+    const tStart = process.hrtime();
+    const result = solution(input)?.toString();
+    const time = process.hrtime(tStart);
+
+    return {
+      result,
+      time: this.formatTime(time),
+    };
+  }
+
+  async test(part: string | undefined): Promise<[TaskRunResult, TaskRunResult]> {
     if (this.tests == null) {
       throw new Error("Task does not have tests");
     }
@@ -52,24 +76,26 @@ class Task {
     return [this.testPart(part, 1), this.testPart(part, 2)];
   }
 
-  private testPart(part: string | undefined, pt: number): TaskResult {
+  private testPart(part: string | undefined, pt: number): TaskRunResult {
     if (part === undefined || part === pt.toString()) {
       const solution = pt === 1 ? this.partOne : this.partTwo;
       const test = pt === 1 ? this.tests?.part1 : this.tests?.part2;
 
-      if (solution == null) return `No solution for part${pt}`;
-      if (test == null) return `No test for part${pt}`;
+      if (solution == null) return { result: `No solution for part${pt}`, time: "-" };
+      if (test == null) return { result: `No test for part${pt}`, time: "-" };
 
-      const solutionResult = solution(test.input)?.toString();
-      const pass = solutionResult === test.result;
+      const tStart = process.hrtime();
+      const result = solution(test.input)?.toString();
+      const time = process.hrtime(tStart);
 
-      if (!pass) {
-        console.warn(`Solution failed.\nExpected result: ${test.result}\nSolution result: ${solutionResult}`);
-      }
+      const pass = result === test.result;
 
-      return pass ? "Pass" : "Fail";
+      return {
+        result: pass ? "Pass" : `Fail\nExpected result: ${test.result}\nSolution result: ${result}`,
+        time: this.formatTime(time),
+      };
     } else {
-      return "Skipped";
+      return null;
     }
   }
 
@@ -114,6 +140,10 @@ class Task {
     }
 
     return fs.readFileSync(inputPath).toString();
+  }
+
+  private formatTime(t: [number, number]) {
+    return `${t[0]}.${lPad(t[1].toString(), 9, "0")}`;
   }
 }
 
