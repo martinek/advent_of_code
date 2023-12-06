@@ -3,6 +3,15 @@ import Task, { TaskPartSolution } from "../utils/task.js";
 const part1: TaskPartSolution = (input) => "";
 const part2: TaskPartSolution = (input) => "";
 
-const task = new Task(%YEAR%, %DAY%, part1, part2);
+const task = new Task(%YEAR%, %DAY%, part1, part2, {
+  part1: {
+    input: ``,
+    result: "",
+  },
+  part2: {
+    input: ``,
+    result: "",
+  },
+});
 
 export default task;
