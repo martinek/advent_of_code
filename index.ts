@@ -4,11 +4,11 @@ dotenv.config();
 
 import { Command } from "commander";
 import fs from "fs";
-import { COLOR } from "./src/utils/helpers.js";
+import { COLOR, lPad } from "./src/utils/helpers.js";
 
 const program = new Command()
   .option("-t, --test", "run task tests")
-  .argument("<string>", "task identifier in form of YYYY-DD or YYYY-DD-P");
+  .argument("[string]", "task identifier in form of YYYY-DD or YYYY-DD-P");
 
 const invalidTarget = (t?: string) => {
   console.log(`Missing / invalid task identifier${t ? ` (${t})` : ""}
@@ -28,7 +28,8 @@ interface Target {
 
 const parseTarget = (target?: string): Target => {
   if (target == null) {
-    return invalidTarget(target);
+    const d = new Date();
+    target = `${d.getFullYear()}-${lPad(d.getDate().toString(), 2, "0")}`;
   }
 
   let [year, day, part] = target.split("-");
