@@ -1,6 +1,43 @@
+/**
+ * Left pad
+ */
 export const lPad = (str: string, count: number, char = " ") => {
   return new Array(Math.max(count - str.length, 0)).fill(char).join("") + str;
 };
+
+/**
+ * Greatest common divisor of 2 integers
+ */
+export function gcd2(a: number, b: number) {
+  if (!b) return b === 0 ? a : NaN;
+  return gcd2(b, a % b);
+}
+
+/**
+ * Greatest common divisor of a list of integers
+ */
+export function gcd(array: number[]) {
+  var n = 0;
+  for (var i = 0; i < array.length; ++i) n = gcd2(array[i], n);
+  return n;
+}
+
+/**
+ * Least common multiple of 2 integers
+ */
+export function lcm2(a: number, b: number) {
+  //
+  return (a * b) / gcd2(a, b);
+}
+
+/**
+ * Least common multiple of a list of integers
+ */
+export function lcm(array: number[]) {
+  var n = 1;
+  for (var i = 0; i < array.length; ++i) n = lcm2(array[i], n);
+  return n;
+}
 
 export const COLOR = {
   Reset: "\x1b[0m",
