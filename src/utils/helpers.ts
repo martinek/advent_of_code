@@ -39,6 +39,8 @@ export function lcm(array: number[]) {
   return n;
 }
 
+export const SUM = (numbers: number[]) => numbers.reduce((acc, n) => acc + n, 0);
+
 export const COLOR = {
   Reset: "\x1b[0m",
   Bright: "\x1b[1m",
