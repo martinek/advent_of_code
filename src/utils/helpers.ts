@@ -41,6 +41,11 @@ export function lcm(array: number[]) {
 
 export const SUM = (numbers: number[]) => numbers.reduce((acc, n) => acc + n, 0);
 
+export const isPresent = <U extends any>(a: U | null | undefined): a is U => {
+  if (a === null || a === undefined) return false;
+  return true;
+};
+
 export const COLOR = {
   Reset: "\x1b[0m",
   Bright: "\x1b[1m",

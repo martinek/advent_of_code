@@ -232,3 +232,4 @@ const task = new Task(2023, 10, part1, part2, {
 export default task;
 
 // 430 - high
+// start ~7:55, end 9:54
