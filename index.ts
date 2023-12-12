@@ -75,7 +75,7 @@ async function main() {
   results.forEach((res, i) => {
     if (res == null) return;
     console.log(
-      `\n${COLOR.FgCyan}=== Part ${i} ===${COLOR.Reset}\n${COLOR.Bright}${res.result}${COLOR.Reset}\n${res.time} ns`
+      `\n${COLOR.FgCyan}=== Part ${i} ===${COLOR.Reset}\n${COLOR.Bright}${res.result}${COLOR.Reset}\n${res.time} sec`
     );
   });
 }
