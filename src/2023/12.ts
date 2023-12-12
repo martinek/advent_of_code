@@ -66,9 +66,10 @@ const solveRow = (row: string): number => {
   const [mask, countsStr] = row.split(" ");
   const counts = countsStr.split(",").map(Number);
 
-  const options = buildOptions(mask, counts);
+  // const options = buildOptions(mask, counts);
+  // return options.length;
 
-  return options.length;
+  return count(mask, counts);
 };
 
 const part1: TaskPartSolution = (input) => {
@@ -82,6 +83,49 @@ const unfoldRow = (row: string): string => {
   const newMask = five.map(() => mask).join("?");
   const newCounts = five.map(() => counts).join(",");
   return newMask + " " + newCounts;
+};
+
+const CACHE: Record<string, number> = {};
+
+const count = (mask: string, nums: number[]): number => {
+  if (mask === "") {
+    // if mask ran out, but there are no numbers remaining, we got one solution
+    return nums.length === 0 ? 1 : 0;
+  }
+  if (nums.length === 0) {
+    // if nums ran out, but mask does not contain any more #, we got one solution
+    return mask.includes("#") ? 0 : 1;
+  }
+
+  const key = `${mask}__${nums.join(",")}`;
+
+  if (CACHE[key] != null) {
+    return CACHE[key];
+  }
+
+  let res = 0;
+
+  if (mask[0] === "." || mask[0] === "?") {
+    // If next char is or would be ".", just skip over it and continue with smaller mask
+    res += count(mask.slice(1), nums);
+  }
+
+  if (mask[0] === "#" || mask[0] === "?") {
+    // If next char is or would be "#"
+    // make sure the whole next num can be taken as group (and is followed by "."" or "?")
+    const n = nums[0]; // length of next group
+    if (
+      n <= mask.length && // there is enough characters left in mask
+      !mask.slice(0, n).includes(".") && // the next n chars are "#" or "?"
+      (n === mask.length || mask[n] != "#") // end of mask or the group is not followed by "."
+    ) {
+      // remove group + space after from mask, remove num for the group
+      res += count(mask.slice(n + 1), nums.slice(1));
+    }
+  }
+
+  CACHE[key] = res;
+  return res;
 };
 
 const part2: TaskPartSolution = (input) => {
