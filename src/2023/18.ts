@@ -138,11 +138,28 @@ const part1: TaskPartSolution = (input) => {
   const cmds = parseInput(input);
   return getArea(cmds);
 };
+
+// Magic!
+const getArea2 = (commands: Command[]): number => {
+  let [sum, length, y] = [0, 0, 0];
+  for (const { direction, distance } of commands) {
+    length = length + distance;
+    if (direction === "U") {
+      y = y - distance;
+    } else if (direction === "D") {
+      y = y + distance;
+    } else if (direction === "L") {
+      sum = sum + y * distance;
+    } else if (direction === "R") {
+      sum = sum - y * distance;
+    }
+  }
+  return Math.abs(sum) + length / 2 + 1;
+};
+
 const part2: TaskPartSolution = (input) => {
   const cmds = parseInput1(input);
-  // console.log(cmds);
-  console.log(cmds.length);
-  // return getArea(cmds2);
+  return getArea2(cmds);
 };
 
 const task = new Task(2023, 18, part1, part2, {
