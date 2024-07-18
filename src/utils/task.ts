@@ -4,7 +4,7 @@ import fetch from "node-fetch";
 import { lPad } from "./helpers.js";
 
 type TaskResult = string | number | undefined | void;
-export type TaskPartSolution = (input: string) => TaskResult;
+export type TaskPartSolution = (input: string) => TaskResult | Promise<TaskResult>;
 
 type TaskRunResult = {
   result: TaskResult;

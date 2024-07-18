@@ -73,3 +73,7 @@ export const COLOR = {
   BgWhite: "\x1b[47m",
   BgGray: "\x1b[100m",
 };
+
+export const mod = (n: number, m: number): number => {
+  return ((n % m) + m) % m;
+};
