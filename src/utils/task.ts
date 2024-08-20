@@ -26,23 +26,26 @@ class Task {
   partOne: TaskPartSolution | undefined;
   partTwo: TaskPartSolution | undefined;
   tests: TaskTestSuite | undefined;
+  input: string | undefined;
 
   constructor(
     year: number,
     day: number,
     partOne?: TaskPartSolution | undefined,
     partTwo?: TaskPartSolution | undefined,
-    tests?: TaskTestSuite
+    tests?: TaskTestSuite,
+    input?: string
   ) {
     this.year = year;
     this.day = day;
     this.partOne = partOne;
     this.partTwo = partTwo;
     this.tests = tests;
+    this.input = input;
   }
 
   async exec(part: string | undefined): Promise<[TaskRunResult, TaskRunResult]> {
-    const input = await this.loadInput();
+    const input = this.input ?? (await this.loadInput());
 
     return [this.execPart(part, 1, input), this.execPart(part, 2, input)];
   }
