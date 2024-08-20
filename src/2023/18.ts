@@ -69,7 +69,7 @@ const getArea = (commands: Command[]): number => {
 
   // const filled: Record<string, boolean> = {};
 
-  console.log({ bounds });
+  // console.log({ bounds });
   let n = 0;
 
   for (let y = bounds.y.min; y <= bounds.y.max; y++) {
@@ -125,9 +125,9 @@ const getArea = (commands: Command[]): number => {
       // }
     }
     // process.stdout.write("\n");
-    if (y % 100 == 0) {
-      console.log(y);
-    }
+    // if (y % 100 == 0) {
+    //   console.log(y);
+    // }
   }
 
   // return Object.values(filled).filter((v) => v === true).length;
@@ -135,7 +135,7 @@ const getArea = (commands: Command[]): number => {
 };
 
 const part1: TaskPartSolution = (input) => {
-  const cmds = parseInput(input);
+  const cmds = parseInput(input.trim());
   return getArea(cmds);
 };
 
@@ -158,7 +158,7 @@ const getArea2 = (commands: Command[]): number => {
 };
 
 const part2: TaskPartSolution = (input) => {
-  const cmds = parseInput1(input);
+  const cmds = parseInput1(input.trim());
   return getArea2(cmds);
 };
 

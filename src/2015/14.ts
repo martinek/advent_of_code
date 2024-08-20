@@ -8,7 +8,7 @@ interface Reindeer {
 }
 
 const parseInput = (input: string): Reindeer[] => {
-  const lines = input.split("\n");
+  const lines = input.trim().split("\n");
   const reindeers: Reindeer[] = lines.map((r) => {
     const [name, _1, _2, speed, _3, _4, flyTime, _5, _6, _7, _8, _9, _10, restTime] = r.split(" ");
     return {

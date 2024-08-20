@@ -122,13 +122,13 @@ class Grid {
 }
 
 const part1: TaskPartSolution = (input) => {
-  const grid = new Grid(input);
+  const grid = new Grid(input.trim());
   grid.fill({ x: 500, y: 0 });
   // grid.print();
   return grid.sand.length;
 };
 const part2: TaskPartSolution = (input) => {
-  const grid = new Grid(input);
+  const grid = new Grid(input.trim());
   grid.fill({ x: 500, y: 0 }, true);
   // grid.print();
   return grid.sand.length;
