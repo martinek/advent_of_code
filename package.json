@@ -8,12 +8,15 @@
     "test": "ts-node ./index.ts -t",
     "test:watch": "nodemon ./index.ts -t",
     "task": "ts-node ./index.ts",
-    "task:watch": "nodemon ./index.ts"
+    "task:watch": "nodemon ./index.ts",
+    "update-calculon": "ts-node ./update-calculon.ts -t"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/crypto-js": "^4.2.2",
     "commander": "^11.1.0",
+    "crypto-js": "^4.2.0",
     "dotenv": "^16.3.1",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.2",
