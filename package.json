@@ -5,11 +5,12 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "test": "tsx ./index.ts -t",
-    "test:watch": "tsx --watch ./index.ts -t",
+    "test": "tsx ./index.ts",
+    "test:watch": "tsx --watch ./index.ts",
     "task": "tsx ./index.ts",
     "task:watch": "tsx --watch ./index.ts",
-    "update-calculon": "tsx ./update-calculon.ts -t"
+    "update-calculon": "tsx ./update-calculon.ts",
+    "update-readme": "tsx ./update-readme.ts"
   },
   "author": "",
   "license": "ISC",
@@ -21,5 +22,8 @@
     "node-fetch": "^3.3.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1"
   }
 }
