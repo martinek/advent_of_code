@@ -16,14 +16,14 @@ const countXmas = (input: string): number => {
   };
 
   // horizontal
-  console.log("horizontal");
+  // console.log("horizontal");
   const rows = input.split("\n");
   rows.forEach((row) => {
     addLine(row);
   });
 
   // vertical
-  console.log("vertical");
+  // console.log("vertical");
   const width = rows[0].length;
   for (let i = 0; i < width; i++) {
     let col = "";
@@ -34,7 +34,7 @@ const countXmas = (input: string): number => {
   }
 
   // diagonal right
-  console.log("diag right");
+  // console.log("diag right");
   for (let i = 0; i < width; i++) {
     let col = "";
     for (let j = 0; j < rows.length; j++) {
@@ -58,7 +58,7 @@ const countXmas = (input: string): number => {
   }
 
   // diagonal left
-  console.log("diag left");
+  // console.log("diag left");
   for (let y = 0; y < rows.length; y++) {
     let col = "";
     for (let x = 0; x < width; x++) {
@@ -80,18 +80,10 @@ const countXmas = (input: string): number => {
     addLine(col);
   }
 
-  // console.log(lines.slice(0, 10));
-
   return countXmasLines(lines);
 };
 
 const part1: TaskPartSolution = (input) => {
-  console.log(
-    input
-      .split("\n")
-      .map((line) => line.split("").join(" "))
-      .join("\n")
-  );
   return countXmas(input);
 };
 const part2: TaskPartSolution = (input) => {
