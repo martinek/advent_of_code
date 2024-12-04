@@ -5,8 +5,8 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "test": "tsx ./index.ts",
-    "test:watch": "tsx --watch ./index.ts",
+    "test": "tsx ./index.ts -t",
+    "test:watch": "tsx --watch ./index.ts -t",
     "task": "tsx ./index.ts",
     "task:watch": "tsx --watch ./index.ts",
     "update-calculon": "tsx ./update-calculon.ts",
