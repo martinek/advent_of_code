@@ -4,7 +4,7 @@ dotenv.config();
 
 import { Command } from "commander";
 import fs from "fs";
-import { COLOR, lPad } from "./src/utils/helpers.js";
+import { lPad } from "./src/utils/helpers.js";
 
 const program = new Command()
   .option("-t, --test", "run task tests")
@@ -77,7 +77,7 @@ class Calculon {
   }
 
   async getSets(): Promise<{ id: string; key: string }[]> {
-    return (await this.fetch("/api/v1/input_sets")).json();
+    return (await this.fetch("/api/v1/input_sets")).json() as Promise<{ id: string; key: string }[]>;
   }
 
   async getInput(setId: string, inputKey: string): Promise<string> {

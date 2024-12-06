@@ -5,6 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
+    "check-types": "tsc --noEmit",
     "test": "tsx ./index.ts -t",
     "test:watch": "tsx --watch ./index.ts -t",
     "task": "tsx ./index.ts",
