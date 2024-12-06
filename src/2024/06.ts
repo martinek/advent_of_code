@@ -1,5 +1,14 @@
 import Task, { TaskPartSolution } from "../utils/task.js";
-type Direction = "up" | "down" | "left" | "right";
+
+enum Direction {
+  UP = 0,
+  RIGHT = 1,
+  DOWN = 2,
+  LEFT = 3,
+}
+
+const RIGHT_TURN = [Direction.RIGHT, Direction.DOWN, Direction.LEFT, Direction.UP];
+
 interface Position {
   x: number;
   y: number;
@@ -19,7 +28,7 @@ const parseInput = (input: string): State => {
   const res: State = {
     obstacles: new Set(),
     position: { x: 0, y: 0 },
-    direction: "up",
+    direction: Direction.UP,
     size: { height: 0, width: 0 },
     visited: new Set(),
     visitedDir: new Set(),
@@ -33,20 +42,7 @@ const parseInput = (input: string): State => {
         res.obstacles.add(`${x},${y}`);
       } else if (cell !== ".") {
         res.position = { x, y };
-        switch (cell) {
-          case "^":
-            res.direction = "up";
-            break;
-          case "v":
-            res.direction = "down";
-            break;
-          case "<":
-            res.direction = "left";
-            break;
-          case ">":
-            res.direction = "right";
-            break;
-        }
+        res.direction = ["^", ">", "v", "<"].indexOf(cell);
         res.visited.add(`${x},${y}`);
         res.visitedDir.add(`${x},${y},${res.direction}`);
       }
@@ -55,15 +51,15 @@ const parseInput = (input: string): State => {
   return res;
 };
 
-const offset = (position: Position, direction: "up" | "down" | "left" | "right"): Position => {
+const offset = (position: Position, direction: Direction): Position => {
   switch (direction) {
-    case "up":
+    case Direction.UP:
       return { x: position.x, y: position.y - 1 };
-    case "down":
+    case Direction.DOWN:
       return { x: position.x, y: position.y + 1 };
-    case "left":
+    case Direction.LEFT:
       return { x: position.x - 1, y: position.y };
-    case "right":
+    case Direction.RIGHT:
       return { x: position.x + 1, y: position.y };
   }
 };
@@ -79,7 +75,7 @@ const walk = (state: State): State | null => {
   }
   let nextPosition = offset(position, direction);
   if (state.obstacles.has(`${nextPosition.x},${nextPosition.y}`)) {
-    state.direction = TURNS[state.direction];
+    state.direction = RIGHT_TURN[state.direction];
     return state;
   }
   if (isOut(nextPosition, state.size)) {
@@ -94,13 +90,6 @@ const walk = (state: State): State | null => {
   state.position = nextPosition;
   return state;
 };
-
-const TURNS = {
-  up: "right",
-  right: "down",
-  down: "left",
-  left: "up",
-} as const;
 
 const walkOut = (state: State): number => {
   let s: State | null = state;
@@ -180,11 +169,3 @@ const task = new Task(2024, 6, part1, part2, {
 });
 
 export default task;
-
-/*
-
-550 - low
-1692 - high
-1998 - high
-
-*/
