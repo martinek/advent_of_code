@@ -1,3 +1,5 @@
+import child from "node:child_process";
+
 /**
  * Left pad
  */
@@ -76,4 +78,8 @@ export const COLOR = {
 
 export const mod = (n: number, m: number): number => {
   return ((n % m) + m) % m;
+};
+
+export const pause = () => {
+  child.spawnSync("read _ ", { shell: true, stdio: [0, 1, 2] });
 };
