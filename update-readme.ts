@@ -10,15 +10,17 @@ const stars = {
   2015: [2, 2, 2, 0, 2, 2, 0, 0, 2, 2, 0, 0, 0, 2, 0, 0, 0, 2],
 };
 
+const taskPath = (year: number, day: number) => `src/${year}/${(day + 1).toString().padStart(2, "0")}.ts`;
+
 const star = (year: number, day: number, count: number | undefined) => {
   const d = (day + 1).toString().padStart(2, "0");
   switch (count) {
     case 0:
       return `![Day](https://badgen.net/badge/${d}/%E2%98%86%E2%98%86/gray)`;
     case 1:
-      return `[![Day](https://badgen.net/badge/${d}/%E2%98%85%E2%98%86/yellow)](src/${year}/${d}.ts)`;
+      return `[![Day](https://badgen.net/badge/${d}/%E2%98%85%E2%98%86/yellow)](${taskPath(year, day)})`;
     case 2:
-      return `[![Day](https://badgen.net/badge/${d}/%E2%98%85%E2%98%85/green)](src/${year}/${d}.ts)`;
+      return `[![Day](https://badgen.net/badge/${d}/%E2%98%85%E2%98%85/green)](${taskPath(year, day)})`;
     default:
       return `![Day](https://badgen.net/badge/${d}/%E2%98%86%E2%98%86/gray)`;
   }
