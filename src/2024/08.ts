@@ -1,4 +1,5 @@
-import { COLOR, gcd2 } from "../utils/helpers.js";
+import { gcd2 } from "../utils/helpers.js";
+import { ill } from "../utils/illustrator.js";
 import Task, { TaskPartSolution } from "../utils/task.js";
 
 interface Size {
@@ -116,10 +117,10 @@ const printPoints = (pts: Point[], highlight: Point[], size: Size) => {
   pts.forEach((p) => {
     res[p.y][p.x] = "#";
     if (highlight.some((h) => h.x === p.x && h.y === p.y)) {
-      res[p.y][p.x] = `${COLOR.FgMagenta}#${COLOR.Reset}`;
+      res[p.y][p.x] = "X";
     }
   });
-  console.log(res.map((line) => line.join("")).join("\n"));
+  ill.log(res.map((line) => line.join("")).join("\n"));
 };
 
 const part1: TaskPartSolution = (input) => {
