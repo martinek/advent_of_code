@@ -83,3 +83,7 @@ export const mod = (n: number, m: number): number => {
 export const pause = () => {
   child.spawnSync("read _ ", { shell: true, stdio: [0, 1, 2] });
 };
+
+export const wait = (t: number) => {
+  child.spawnSync(`sleep ${t}`, { shell: true, stdio: [0, 1, 2] });
+};

@@ -24,6 +24,7 @@ class Illustrator {
   constructor() {}
 
   PPC: number = 10;
+  GRID: number = 0;
   _lastCharacterMap: CharacterMap | undefined;
 
   log(input: string, map?: CharacterMap) {
@@ -53,14 +54,15 @@ class Illustrator {
     const width = lines[0].length;
     const height = lines.length;
 
+    const grid = this.GRID;
     const ppc = this.PPC;
-    const png = new PNG({ width: width * (ppc + 1), height: height * (ppc + 1) });
+    const png = new PNG({ width: width * (ppc + grid), height: height * (ppc + grid) });
 
     const drawPixel = (x: number, y: number, color: Color) => {
       // draw pixels scaled up by ppc
       for (let dy = 0; dy < ppc; dy++) {
         for (let dx = 0; dx < ppc; dx++) {
-          const idx = ((y * (ppc + 1) + dy) * png.width + (x * (ppc + 1) + dx)) << 2;
+          const idx = ((y * (ppc + grid) + dy) * png.width + (x * (ppc + grid) + dx)) << 2;
           png.data[idx] = color[0];
           png.data[idx + 1] = color[1];
           png.data[idx + 2] = color[2];
