@@ -1,4 +1,5 @@
 import { PNG } from "pngjs";
+import fs from "node:fs";
 
 type Color = readonly [number, number, number, number];
 type CharacterMap = Record<string, Color>;
@@ -18,6 +19,7 @@ const COLOR_LIBRARY: Color[] = [
 interface DrawOptions {
   characterMap: CharacterMap;
   background?: Color;
+  frame?: number;
 }
 
 class Illustrator {
@@ -25,16 +27,40 @@ class Illustrator {
 
   PPC: number = 10;
   GRID: number = 0;
+  _record: boolean = false;
+  _recordName: string = "";
   _lastCharacterMap: CharacterMap | undefined;
 
-  log(input: string, map?: CharacterMap) {
+  _frames: number = 0;
+  startRecording(name: string) {
+    this._record = true;
+    this._recordName = name;
+    this._frames = 0;
+    fs.mkdirSync("recordings/" + name, { recursive: true });
+  }
+
+  endRecording() {
+    this._record = false;
+    console.log("Recording done. Use ffmpeg to convert images to video or gif.");
+    console.log(
+      `Example: ffmpeg -framerate 60 -i ./recordings/${this._recordName}/%d.png -pix_fmt yuv420p recordings/${this._recordName}out_60fps.mp4`
+    );
+  }
+
+  log(input: string, map?: CharacterMap, frame?: number) {
     const characterMap = map ?? this.buildCharacterMap(input);
-    this.draw(input, { characterMap });
+    this.draw(input, { characterMap, frame });
   }
 
   draw(input: string, options: DrawOptions) {
     const buffer = this.buildBuffer(input, options);
-    this.drawBuffer(buffer);
+    if (this._record) {
+      const i = options.frame ?? this._frames;
+      fs.writeFileSync(`recordings/${this._recordName}/${i}.png`, buffer);
+      this._frames++;
+    } else {
+      this.drawBuffer(buffer);
+    }
   }
 
   buildCharacterMap(input: string): CharacterMap {

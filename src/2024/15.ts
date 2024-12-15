@@ -15,7 +15,7 @@ interface State {
   directions: Direction[];
 }
 
-const printState = (s: State, pt2 = false) => {
+const printState = (s: State, pt2 = false, frame?: number) => {
   const charMap = {
     "#": [0, 0, 255, 255],
     O: [0, 255, 0, 255],
@@ -35,11 +35,11 @@ const printState = (s: State, pt2 = false) => {
         row += "#";
       } else if (boxes.some((p) => p.x === x && p.y === y)) {
         row += "O";
-      } else if (boxes.some((p) => p.x === x - 1 && p.y === y)) {
+      } else if (pt2 && boxes.some((p) => p.x === x - 1 && p.y === y)) {
         row += "P";
       } else if (robot.x === x && robot.y === y) {
         row += "@";
-      } else if (robot.x === x - 1 && robot.y === y) {
+      } else if (pt2 && robot.x === x - 1 && robot.y === y) {
         row += ".";
       } else {
         row += ".";
@@ -47,9 +47,7 @@ const printState = (s: State, pt2 = false) => {
     }
     res += row + "\n";
   }
-  ill.GRID = 0;
-  ill.PPC = 10;
-  ill.log(res, charMap);
+  ill.log(res, charMap, frame);
 };
 
 const parseInput = (input: string): State => {
@@ -280,11 +278,17 @@ const part1: TaskPartSolution = (input) => {
   let s = parseInput(input);
   const directions = s.directions;
 
+  // ill.GRID = 0;
+  // ill.PPC = 10;
+  // ill.startRecording("2024-15-1");
+
   for (const dir of directions) {
     s = step(s, dir);
-    // printState(s);
+    printState(s);
     // pause();
   }
+
+  // ill.endRecording();
 
   // printState(s);
 
@@ -294,17 +298,23 @@ const part2: TaskPartSolution = (input) => {
   let s = parseInput2(input);
   const directions = s.directions;
 
-  printState(s, true);
+  // ill.GRID = 0;
+  // ill.PPC = 10;
+  // ill.startRecording("2024-15-2");
+
+  // printState(s, true);
 
   let i = 0;
   for (const dir of directions) {
     i++;
     s = step2(s, dir);
     // console.log(i, dir);
-    // printState(s);
+    // printState(s, true, i);
     // pause();
   }
   // printState(s);
+
+  // ill.endRecording();
 
   return countState(s);
 };
