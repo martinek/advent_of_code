@@ -5,7 +5,7 @@ type Color = readonly [number, number, number, number];
 type CharacterMap = Record<string, Color>;
 
 const DEFAULT_COLOR: Color = [10, 10, 10, 255];
-const COLOR_LIBRARY: Color[] = [
+export const COLOR_LIBRARY: Color[] = [
   [40, 40, 40, 255],
   [255, 255, 255, 255],
   [255, 0, 0, 255],
