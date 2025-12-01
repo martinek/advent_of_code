@@ -9,6 +9,19 @@ import Task, { TaskPartSolution } from "../utils/task.js";
 // ];
 
 /**
+
+           3                          7          9                 A
+       ^   A       ^^        <<       A     >>   A        vvv      A
+   <   A > A   <   AA  v <   AA >>  ^ A  v  AA ^ A  v <   AAA ^  > A
+v<<A>>^AvA^Av<<A>>^AAv<A<A>>^AAvAA^<A>Av<A^>AA<A>Av<A<A>>^AAA<Av>A^A
+
+           3                      7          9                 A
+       ^   A         <<      ^^   A     >>   A        vvv      A
+   <   A > A  v <<   AA >  ^ AA > A  v  AA ^ A   < v  AAA >  ^ A
+<v<A>>^AvA^A<vA<AA>>^AAvA<^A>AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
+*/
+
+/**
 +---+---+---+
 | 7 | 8 | 9 |
 +---+---+---+
@@ -29,28 +42,27 @@ const G1: string = "789\n456\n123\n 0A";
 */
 const G2: string = " ^A\n<v>";
 
-const N = [
-  [[0, 1], "v"],
-  [[0, -1], "^"],
-  [[1, 0], ">"],
-  [[-1, 0], "<"],
-] as const;
+const str = (char: string, times: number): string => {
+  return Array.from({ length: times })
+    .map(() => char)
+    .join("");
+};
 
-const CACHE = new Map<string, string[]>();
+const CACHE = new Map<string, string>();
 
-const path = (graphString: string, from: string, to: string): string[] => {
+const path = (graphString: string, from: string, to: string): string => {
+  if (from === to) return "";
+
   const key = graphString + "_" + from + "_" + to;
   if (CACHE.has(key)) {
     return CACHE.get(key)!;
   }
   const graph = new Map<string, [number, number]>();
-  const map = graphString.split("\n").map((row, y) =>
-    row.split("").map((cell, x) => {
+  graphString.split("\n").forEach((row, y) =>
+    row.split("").forEach((cell, x) => {
       graph.set(cell, [x, y]);
-      return cell;
     })
   );
-  let res: string[] = [];
 
   const start = graph.get(from);
   const end = graph.get(to);
@@ -59,53 +71,51 @@ const path = (graphString: string, from: string, to: string): string[] => {
     throw new Error("Invalid start or end");
   }
 
-  const queue = [{ node: start, path: "" }];
-  let minLen = Infinity;
-  while (queue.length > 0) {
-    const { node, path } = queue.shift()!;
-    if (node[0] === end[0] && node[1] === end[1]) {
-      if (path.length < minLen) {
-        res = [path]; // if new path is best, remove previous paths
-        minLen = path.length;
-      } else {
-        res.push(path);
-      }
-      continue;
-    }
-    N.forEach(([[dx, dy], move]) => {
-      const x = node[0] + dx;
-      const y = node[1] + dy;
-      const cell = map[y]?.[x];
-      if (cell === undefined || cell === " ") return;
-      const npath = path + move;
-      if (npath.length >= minLen) return; // do not add to queue if path is longer than minLen
-      queue.push({ node: [x, y], path: path + move });
-    });
+  const dx = end[0] - start[0];
+  const dy = end[1] - start[1];
+
+  let path = "";
+  if (start[0] === 0) {
+    // if start is on first column, move horizontally first
+    path += str(dx > 0 ? ">" : "<", Math.abs(dx));
+    path += str(dy > 0 ? "v" : "^", Math.abs(dy));
+  } else {
+    // first move vertically
+    path += str(dy > 0 ? "v" : "^", Math.abs(dy));
+    path += str(dx > 0 ? ">" : "<", Math.abs(dx));
   }
 
-  CACHE.set(key, res);
-  return res;
+  console.log(from, to, path);
+
+  CACHE.set(key, path);
+  return path;
 };
 
-const CACHE2 = new Map<string, string[]>();
-const encode = (graphString: string, input: string): string[] => {
-  const key = graphString + "_" + input;
+const CACHE2 = new Map<string, string>();
+const encode = (graphString: string, input: string, times = 0): string => {
+  const key = graphString + "_" + input + "_" + times;
   if (CACHE2.has(key)) {
     return CACHE2.get(key)!;
   }
-  let res: string[] = [];
-  const nodes = ("A" + input).split("");
 
-  for (let i = 0; i < nodes.length - 1; i++) {
-    // not last, need pairs
-    const from = nodes[i];
-    const to = nodes[i + 1];
-    const paths = path(graphString, from, to);
-    // console.log(from, to, paths);
-    if (res.length === 0) {
-      res = paths.map((p) => p + "A");
-    } else {
-      res = paths.flatMap((p) => res.map((r) => r + p + "A"));
+  const nodes = input.split("");
+  let res: string = "";
+
+  if (nodes.length === 2) {
+    res = path(graphString, nodes[0], nodes[1]);
+  } else {
+    for (let i = 0; i < nodes.length - 1; i++) {
+      // not last, need pairs
+      const from = nodes[i];
+      const to = nodes[i + 1];
+      const p = path(graphString, from, to);
+      res += p + "A";
+      // // console.log(from, to, paths);
+      // if (res.length === 0) {
+      //   res = paths.map((p) => p + "A");
+      // } else {
+      //   res = paths.flatMap((p) => res.map((r) => r + p + "A"));
+      // }
     }
   }
 
@@ -120,26 +130,23 @@ const keepShortest = (paths: string[]): string[] => {
 };
 
 const solveCode = (code: string, d: number): number => {
-  const paths = encode(G1, code);
+  const p = encode(G1, "A" + code);
+
+  console.log(code, p);
 
   let i = d;
 
-  let round: Set<string> = new Set<string>(paths);
+  let res = p;
   while (i > 0) {
-    const newRound = new Set<string>();
-    round.forEach((p) => {
-      const l = encode(G2, p); // all paths will have same length
-      l.forEach((p2) => newRound.add(p2));
-    });
-    round = newRound;
-    console.log(">>>", code, d - i, round.size);
+    res = encode(G2, "A" + res);
+    console.log(res);
     i--;
   }
 
-  const res = keepShortest(Array.from(round.values()));
-  const l = res[0].length;
-  console.log(code, l, Number(code.replaceAll("A", "")));
-  return l * Number(code.replaceAll("A", ""));
+  // const res = keepShortest(Array.from(round.values()));
+  // const l = res[0].length;
+  console.log(code, res.length, Number(code.replaceAll("A", "")));
+  return res.length * Number(code.replaceAll("A", ""));
 };
 
 const part1: TaskPartSolution = (input) => {
