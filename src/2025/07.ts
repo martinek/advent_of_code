@@ -25,7 +25,7 @@ const part2: TaskPartSolution = (input) => {
   const [start, ...rows] = input.split("\n").map((line) => line.split(""));
   // const positionsLog: number[][] = [];
   let positions = start.map((c) => (c === "S" ? 1 : 0));
-  // positionsLog.push([...positions]);
+  // ill.startRecording("2025-07-part2");
   rows.forEach((row) => {
     for (let i = 0; i < positions.length; i++) {
       if (positions[i] > 0) {
@@ -37,7 +37,16 @@ const part2: TaskPartSolution = (input) => {
       }
     }
     // positionsLog.push([...positions]);
+    // ill.draw(
+    //   rows
+    //     .map((r, y) => r.map((n, x) => (positionsLog[y]?.[x] ?? 0 > 0 ? "#" : n == "^" ? "^" : ".")).join(""))
+    //     .join("\n"),
+    //   {
+    //     characterMap: { "#": [0, 200, 0, 255], ".": [0, 0, 0, 0], "^": [255, 0, 0, 255] },
+    //   }
+    // );
   });
+  // ill.endRecording();
   // ill.draw(
   //   positionsLog.map((r, y) => r.map((n, x) => (rows[y]?.[x] == "^" ? "^" : n > 0 ? "#" : ".")).join("")).join("\n"),
   //   {
