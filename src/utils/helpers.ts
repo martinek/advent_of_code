@@ -42,6 +42,7 @@ export function lcm(array: number[]) {
 }
 
 export const SUM = (numbers: number[]) => numbers.reduce((acc, n) => acc + n, 0);
+export const PROD = (numbers: number[]) => numbers.reduce((acc, n) => acc * n, 1);
 
 export const isPresent = <U extends any>(a: U | null | undefined): a is U => {
   if (a === null || a === undefined) return false;
