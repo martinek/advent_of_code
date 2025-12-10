@@ -88,3 +88,20 @@ export const pause = () => {
 export const wait = (t: number) => {
   child.spawnSync(`sleep ${t}`, { shell: true, stdio: [0, 1, 2] });
 };
+
+export const combinations = <T>(arr: T[], k: number): T[][] => {
+  const result: T[][] = [];
+  const comb = (start: number, path: T[]) => {
+    if (path.length === k) {
+      result.push([...path]);
+      return;
+    }
+    for (let i = start; i < arr.length; i++) {
+      path.push(arr[i]);
+      comb(i + 1, path);
+      path.pop();
+    }
+  };
+  comb(0, []);
+  return result;
+};
