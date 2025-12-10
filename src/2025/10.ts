@@ -1,5 +1,6 @@
 import { combinations, SUM } from "../utils/helpers.js";
 import Task, { TaskPartSolution } from "../utils/task.js";
+import { Arith, Context, init } from "z3-solver";
 
 const eq = (a: number[], b: number[]): boolean => {
   if (a.length !== b.length) {
@@ -124,72 +125,44 @@ class Machine {
     return r;
   }
 
-  initJoltage(): number {
-    const stateKey = (state: number[]) => state.join(",");
+  async initJoltage(context: Context): Promise<number> {
+    const { Optimize, Int } = context;
 
-    const target = stateKey(this.joltage);
-    // console.log("TARGET", target);
-    const buttons = this.buttons.toSorted((a, b) => b.length - a.length);
-    // console.log("BUTTONS", this.buttons);
+    const solver = new Optimize();
+    const buttonPressesVars: Arith<"main">[] = [];
 
-    // let r = 0;
-    const bestDepths = new Map<string, number>();
-    const startPath = new Path(
-      this.joltage.map(() => 0),
-      0
-    );
-    let tmp: Path[] = [startPath];
+    // Create counter for number of presses of each button
+    this.buttons.forEach((_, i) => {
+      const buttonPressesVar = Int.const(`button_${i}_presses`);
+      solver.add(buttonPressesVar.ge(0));
+      buttonPressesVars.push(buttonPressesVar);
+    });
 
-    // create combinations of all buttons
-    for (let i = 1; i <= buttons.length; i++) {
-      combinations(buttons, i).forEach((comb) => {
-        const p = comb.reduce((path, btn) => path.pressButton(btn, 1), startPath);
-        tmp.push(p);
-      });
-    }
-
-    console.log(
-      "START PATHS",
-      tmp.map((p) => p.key)
-    );
-
-    // bestDepths.set(tmp[0].key, 0);
-
-    let bestDepth = Infinity;
-
-    let i = 0;
-    while (tmp.length > 0) {
-      const state = tmp.pop()!;
-
-      const pathSets = state.getPaths(buttons, this.joltage, bestDepth);
-      for (const newPaths of pathSets) {
-        for (const newPath of newPaths) {
-          if (eq(newPath.state, this.joltage)) {
-            console.log("FOUND", newPath.depth);
-            bestDepth = Math.min(bestDepth, newPath.depth);
-          }
-          // if (bestDepths.has(newPath.key)) {
-          //   if (bestDepths.get(newPath.key)! <= newPath.depth) {
-          //     continue;
-          //   }
-          // }
-          // bestDepths.set(newPath.key, newPath.depth);
-          tmp.push(newPath);
+    // Each joltage must equal sum of buttons affecting it
+    this.joltage.forEach((targetJoltage, pos) => {
+      let condition: Arith<"main"> = Int.val(0);
+      this.buttons.forEach((button, i) => {
+        // If button affects this joltage, add its presses to the condition
+        if (button.includes(pos)) {
+          condition = condition.add(buttonPressesVars[i]);
         }
-      }
+      });
+      // Resulting sum must equal to target joltage
+      solver.add(condition.eq(Int.val(targetJoltage)));
+    });
 
-      i++;
-      if (i % 1000000 === 0) {
-        console.log(i, tmp.length, bestDepths.size, bestDepth);
-      }
+    // Tell solver to minimize total number of button presses
+    // Create sum of all button presses
+    const totalPresses = buttonPressesVars.reduce((acc, cur) => acc.add(cur), Int.val(0));
+    solver.minimize(totalPresses);
 
-      // console.log(
-      //   "TMP",
-      //   tmp.map((p) => p.key)
-      // );
+    const result = await solver.check();
+
+    if (result !== "sat") {
+      throw new Error("No solution found");
     }
 
-    return bestDepth;
+    return Number(solver.model().eval(totalPresses).toString());
   }
 }
 
@@ -199,17 +172,19 @@ const part1: TaskPartSolution = (input) => {
 
   return SUM(machines.map((m) => m.initLights()));
 };
-const part2: TaskPartSolution = (input) => {
-  const lines = input.split("\n").filter((l) => l.length > 0);
-  const machines = lines.map((line) => new Machine(line)).slice(0, 1); // Only first machine for part 2
 
-  return SUM(
-    machines.map((m) => {
-      const r = m.initJoltage();
-      console.log("MACHINE RESULT", r);
-      return r;
-    })
-  );
+const part2: TaskPartSolution = async (input) => {
+  const { Context } = await init();
+
+  const lines = input.split("\n").filter((l) => l.length > 0);
+  const machines = lines.map((line) => new Machine(line)); //.slice(0, 1); // Only first machine for part 2
+
+  const res = [];
+  for (const m of machines) {
+    res.push(await m.initJoltage(Context("main")));
+  }
+
+  return SUM(res);
 };
 
 const task = new Task(2025, 10, part1, part2, {

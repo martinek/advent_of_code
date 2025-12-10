@@ -47,10 +47,10 @@ class Task {
   async exec(part: string | undefined): Promise<[TaskRunResult, TaskRunResult]> {
     const input = this.input ?? (await this.loadInput());
 
-    return [this.execPart(part, 1, input), this.execPart(part, 2, input)];
+    return [await this.execPart(part, 1, input), await this.execPart(part, 2, input)];
   }
 
-  private execPart(part: string | undefined, pt: number, input: string): TaskRunResult {
+  private async execPart(part: string | undefined, pt: number, input: string): Promise<TaskRunResult> {
     let solution: TaskPartSolution | undefined;
 
     if (part === undefined || part === pt.toString()) {
@@ -62,7 +62,8 @@ class Task {
     }
 
     const tStart = process.hrtime();
-    const result = solution(input)?.toString();
+    const r = solution(input);
+    const result = (r instanceof Promise ? await r : r)?.toString();
     const time = process.hrtime(tStart);
 
     return {
@@ -76,10 +77,10 @@ class Task {
       throw new Error("Task does not have tests");
     }
 
-    return [this.testPart(part, 1), this.testPart(part, 2)];
+    return [await this.testPart(part, 1), await this.testPart(part, 2)];
   }
 
-  private testPart(part: string | undefined, pt: number): TaskRunResult {
+  private async testPart(part: string | undefined, pt: number): Promise<TaskRunResult> {
     if (part === undefined || part === pt.toString()) {
       const solution = pt === 1 ? this.partOne : this.partTwo;
       const test = pt === 1 ? this.tests?.part1 : this.tests?.part2;
@@ -88,13 +89,14 @@ class Task {
       if (test == null) return { result: `No test for part${pt}`, time: "-" };
 
       const tStart = process.hrtime();
-      const result = solution(test.input)?.toString();
+      const r = solution(test.input);
+      const result = (r instanceof Promise ? await r : r)?.toString();
       const time = process.hrtime(tStart);
 
       const pass = result === test.result;
 
       return {
-        result: pass ? "Pass" : `Fail\nExpected result: ${test.result}\nSolution result: ${result}`,
+        result: pass ? `Pass: ${result}` : `Fail\nExpected result: ${test.result}\nSolution result: ${result}`,
         time: this.formatTime(time),
       };
     } else {
