@@ -4,7 +4,7 @@
 
 <!-- stars -->
 
-## 2025: 18 ★
+## 2025: 24 ★
 
 [![Day](https://badgen.net/badge/01/%E2%98%85%E2%98%85/green)](src/2025/01.ts)
 [![Day](https://badgen.net/badge/02/%E2%98%85%E2%98%85/green)](src/2025/02.ts)
@@ -15,6 +15,9 @@
 [![Day](https://badgen.net/badge/07/%E2%98%85%E2%98%85/green)](src/2025/07.ts)
 [![Day](https://badgen.net/badge/08/%E2%98%85%E2%98%85/green)](src/2025/08.ts)  
 [![Day](https://badgen.net/badge/09/%E2%98%85%E2%98%85/green)](src/2025/09.ts)
+[![Day](https://badgen.net/badge/10/%E2%98%85%E2%98%85/green)](src/2025/10.ts)
+[![Day](https://badgen.net/badge/11/%E2%98%85%E2%98%85/green)](src/2025/11.ts)
+[![Day](https://badgen.net/badge/12/%E2%98%85%E2%98%85/green)](src/2025/12.ts)
 
 
 ## 2024: 43 ★
